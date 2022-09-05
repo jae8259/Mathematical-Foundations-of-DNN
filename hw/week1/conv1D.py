@@ -1,3 +1,4 @@
+from functools import reduce
 import numpy as np
 
 
@@ -10,7 +11,12 @@ class Convolution1d:
     def __matmul__(self, vector):
         r, n = self.__r, vector.size
 
-        return None  # IMPLEMENT THIS
+        return np.asarray(
+            [
+                sum([self.__filt[j] * vector[i + j] for j in range(r)])
+                for i in range(n - r + 1)
+            ]
+        )
 
 
 class TransposedConvolution1d:
@@ -26,8 +32,17 @@ class TransposedConvolution1d:
     def __matmul__(self, vector):
         r = self.__r
         n = vector.size + r - 1
-
-        return None  # IMPLEMENT THIS
+        return np.asarray(
+            [
+                sum(
+                    [
+                        self.__filt[i - j] * vector[j]
+                        for j in range(max(0, i - r + 1), min(i, vector.size))
+                    ]
+                )
+                for i in range(n)
+            ]
+        )
 
 
 def huber_loss(x):
