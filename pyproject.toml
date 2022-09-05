@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mathematical foundations of deep neural networks"
+version = "0.1.0"
+description = ""
+authors = ["jae8259 <dragonj5290@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+matplotlib = "^3.5.3"
+numpy = "^1.23.2"
+
+[tool.poetry.dev-dependencies]
+black = {version = "^22.8.0", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

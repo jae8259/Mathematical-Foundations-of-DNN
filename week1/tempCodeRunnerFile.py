@@ -1,0 +1,1 @@
+raph_points(starting_points, f)
