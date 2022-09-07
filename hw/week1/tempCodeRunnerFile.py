@@ -1,1 +1,1 @@
-huber_loss(A @ x - b) + 0.5 * lam * np.linalg.norm(x) ** 2
+raph_points(starting_points, f)
