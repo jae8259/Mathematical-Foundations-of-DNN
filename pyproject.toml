@@ -9,6 +9,8 @@ python = "~3.9"
 matplotlib = "^3.5.3"
 numpy = "^1.23.2"
 scipy = "^1.9.1"
+torch = "^1.12.1"
+torchvision = "^0.13.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^22.8.0", allow-prereleases = true}

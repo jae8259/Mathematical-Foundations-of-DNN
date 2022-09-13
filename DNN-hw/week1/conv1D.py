@@ -12,10 +12,7 @@ class Convolution1d:
         r, n = self.__r, vector.size
 
         return np.asarray(
-            [
-                sum([self.__filt[j] * vector[i + j] for j in range(r)])
-                for i in range(n - r + 1)
-            ]
+            [sum(self.__filt * vector[j : j + r]) for j in range(n - r + 1)]
         )
 
 
@@ -35,12 +32,10 @@ class TransposedConvolution1d:
         return np.asarray(
             [
                 sum(
-                    [
-                        self.__filt[i - j] * vector[j]
-                        for j in range(max(0, i - r + 1), min(i, vector.size))
-                    ]
+                    np.flip(self.__filt)[max(0, r - j - 1) : min(n - j, r)]
+                    * vector[max(0, j - r + 1) : min(j + 1, n - r + 1)]
                 )
-                for i in range(n)
+                for j in range(n)
             ]
         )
 
@@ -63,8 +58,10 @@ if __name__ == "__main__":
     k = np.random.randn(r)
     b = np.random.randn(n - r + 1)
     A = Convolution1d(k)
-    # from scipy.linalg import circulant
-    # A = circulant(np.concatenate((np.flip(k),np.zeros(n-r))))[r-1:,:]
+    from scipy.linalg import circulant
+
+    A = circulant(np.concatenate((np.flip(k), np.zeros(n - r))))[r - 1 :, :]
+    x = np.random.randint(1, 10, 18)
 
     x = np.zeros(n)
     alpha = 0.01
