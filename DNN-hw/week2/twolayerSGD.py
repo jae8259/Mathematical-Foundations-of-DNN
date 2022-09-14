@@ -22,8 +22,12 @@ def f_th(theta, x):
     )
 
 
-def diff_f_th(theta, x):
-    pass
+def diff_f_th(theta: np.ndarray, x: float):
+    a, b, u = np.split(theta, 3)
+    grad_u = sigmoid(a * x + b)
+    grad_b = sigmoid_prime(a * x + b) * u
+    grad_a = grad_b * x
+    return np.concatenate([grad_a, grad_b, grad_u])
 
 
 if __name__ == "__main__":
@@ -45,10 +49,12 @@ if __name__ == "__main__":
     plt.plot(xx, f_true(xx), "r", label="True Fn")
 
     for k in range(K):
-        ...
+        idx = np.random.randint(N)
+        grad = (f_th(theta, X[idx]) - Y[idx]) * diff_f_th(theta, X[idx])
+        theta = theta - alpha * grad
         if (k + 1) % 2000 == 0:
             plt.plot(xx, f_th(theta, xx), label=f"Learned Fn after {k+1} iterations")
 
     plt.legend()
-    # plt.show()
-    plt.savefig("plot.png")
+    plt.show()
+    # plt.savefig("plot.png")

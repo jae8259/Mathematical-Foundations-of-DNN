@@ -58,12 +58,7 @@ class sgdSolver:
     initial_values: Optional[InitialValues] = None
     loss_function: lossFunction = lossFunction(lambda x: x, lambda x: 1)
     name: str = ""
-
-    def calculate_mean_loss(self) -> float:
-        result: np.ndarray = self.loss_function(
-            self.initial_values.X, self.initial_values.Y, self.initial_values.theta
-        )
-        return result.mean()
+    theta: Optional[ndarray] = None
 
     def train(self, epochs: int, learning_rate: float = 0.5) -> List:
         X, Y, theta = self.initial_values
@@ -77,14 +72,14 @@ class sgdSolver:
         return [
             self.loss_function()(X, Y, theta := stochastic_gradient_descent())
             for _ in range(epochs)
-        ]
+        ], theta
 
     def __str__(self) -> str:
         return f"{self.name}"
 
 
-if __name__ == "__main__":
-    # Data declaration
+def problem1and2():
+    # Data declaration for problem1, 2
     N, p = 30, 20
     np.random.seed(0)
     X = np.random.randn(N, p)
@@ -108,16 +103,18 @@ if __name__ == "__main__":
         name="svm",
     )
 
-    lr_result = logistic_regression.train(epochs=100_000, learning_rate=0.05)
-    svm_result = svm.train(epochs=100_000, learning_rate=0.05)
+    lr_result, _ = logistic_regression.train(epochs=100_000, learning_rate=0.05)
+    svm_result, _ = svm.train(epochs=100_000, learning_rate=0.05)
     plt.plot(lr_result, label=str(logistic_regression))
     plt.plot(svm_result, label=str(svm))
     plt.legend()
     plt.show()
     # plt.savefig("plot.png")
 
-    # Data decalration
-    N = 30
+
+def problem3():
+    # Data decalration for problem3
+    N, p = 30, 5
     np.random.seed(0)
     X = np.random.randn(2, N)
     y = np.sign(X[0, :] ** 2 + X[1, :] ** 2 - 0.7)
@@ -127,19 +124,43 @@ if __name__ == "__main__":
     X = X + np.array([[1], [1]])
 
     # plot raw data
-    plt.subplot(2, 1, 1)
+    # plt.subplot(2, 1, 1)
+    plt.plot()
     plt.scatter(X[0][np.where(y == 1)], X[1][np.where(y == 1)])
     plt.scatter(X[0][np.where(y == -1)], X[1][np.where(y == -1)])
-    plt.show()
 
+    # Manipulate data
     theta = np.random.normal(0.0, 1.0, p)
+
+    def phi(X):
+        N = X.shape[1]
+        ret = np.zeros((5, N))
+        for i in range(N):
+            u, v = X[:, i]
+            ret[:, i] = [1, u, u**2, v, v**2]
+        return ret.transpose()
+
+    logistic_regression = sgdSolver(
+        InitialValues(phi(X), y, theta),
+        lossFunction(logistic, logistic_derivative),
+        "logistic regression",
+    )
+
+    # SGD
+    lr_result, theta = logistic_regression.train(epochs=100_000, learning_rate=0.05)
     w = theta
     xx = np.linspace(-4, 4, 1024)
     yy = np.linspace(-4, 4, 1024)
     xx, yy = np.meshgrid(xx, yy)
     Z = w[0] + (w[1] * xx + w[2] * xx**2) + (w[3] * yy + w[4] * yy**2)
     plt.contour(xx, yy, Z, 0)
+    plt.show()
 
-    # SGD
-    plt.subplot(2, 1, 2)
-    lr_result = logistic_regression.train(epochs=100_000, learning_rate=0.05)
+
+def main():
+    problem1and2()
+    problem3()
+
+
+if __name__ == "__main__":
+    main()
